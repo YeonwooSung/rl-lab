@@ -1,7 +1,14 @@
 [project]
 name = "rl-lab"
 version = "0.1.0"
-description = "Add your description here"
+description = "RL Lab: A Reinforcement Learning Environment Toolkit"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "gym>=0.26.2",
+    "pyglet>=2.1.11",
+    "pyyaml>=6.0.3",
+    "ray[default]>=2.53.0",
+    "tensorboard>=2.20.0",
+    "torch>=2.9.1",
+]
