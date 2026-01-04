@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional
+from pathlib import Path
 import yaml
 
 
@@ -31,7 +32,24 @@ class ConfigHandler:
 
 
     def _load_config(self) -> dict:
-        filepath = f"{self.config_info.dirpath}/{self.config_info.filename}"
+        # Prevent path traversal attacks by validating the path
+        base_dir = Path.cwd()
+        dirpath = Path(self.config_info.dirpath)
+        filename = Path(self.config_info.filename)
+
+        # Ensure filename doesn't contain directory separators
+        if len(filename.parts) > 1 or '..' in str(filename):
+            raise ValueError(f"Invalid filename: {self.config_info.filename}")
+
+        # Construct and resolve the full path
+        filepath = (base_dir / dirpath / filename).resolve()
+
+        # Ensure the resolved path is within the base directory
+        try:
+            filepath.relative_to(base_dir)
+        except ValueError:
+            raise ValueError("Invalid path: attempted access outside base directory")
+
         with open(filepath, 'r') as f:
             try:
                 config_dict = yaml.load(f, Loader=yaml.FullLoader)
